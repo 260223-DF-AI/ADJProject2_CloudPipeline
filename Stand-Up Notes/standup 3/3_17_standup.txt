@@ -1,0 +1,8 @@
+- talked about making branches for pull requests
+- which project management board do we use?
+- choices:
+    - Jira
+    - Trello
+    - git hub projects
+
+chose jira
