@@ -1,0 +1,13 @@
+what we did: 
+ - made our own .env
+ - made our own virtual environments
+
+
+
+ what we're doing today:
+ - making our google cloud accounts
+ - researching bigquery
+ - research on how python interacts with GCP
+
+ blockers:
+  - knowledge on GCP
