@@ -12,3 +12,7 @@ app.include_router(apiroutes.router)
 @app.get("/")
 def get_root():
     return {"message": "Hello from main"}
+
+
+
+# uvicorn app.main:app --reload

@@ -4,7 +4,7 @@ What did we get done:
 
 
 What we're going to get done
-- setup fastAPI and Uvicorn, define our resources
+- setup fastAPI and Uvicorn, define our resources, finish making parquet file
 
 - Discussed what type of resources we want our API to have
     - Sales over time (give time frame)
