@@ -1,0 +1,11 @@
+What did we get done:
+- got python connected to our GCP (practice)
+- got practice on Bigquery and read up on GCP
+
+
+What we're going to get done
+- setup fastAPI and Unicorn, define our resources
+
+
+Blockers:
+quiz, evolv, qc on monday
