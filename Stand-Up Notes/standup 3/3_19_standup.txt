@@ -4,7 +4,14 @@ What did we get done:
 
 
 What we're going to get done
-- setup fastAPI and Unicorn, define our resources
+- setup fastAPI and Uvicorn, define our resources
+
+- Discussed what type of resources we want our API to have
+    - Sales over time (give time frame)
+
+    - Sales by Region/State
+
+    - Top N products
 
 
 Blockers:
