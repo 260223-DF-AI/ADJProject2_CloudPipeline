@@ -1,0 +1,10 @@
+What did we got done:
+- set up google cloud bucket/user access to project
+
+What we're going to get done:
+- Andy: Uploading parquet to bucket
+- Dio: FastAPI - GET (querying to bucket)
+- Jaisal: FastAPI - POST (querying to bucket)
+
+Blockers:
+- Google Cloud (IAM)
