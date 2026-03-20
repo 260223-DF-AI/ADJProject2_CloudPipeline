@@ -14,5 +14,8 @@ def get_root():
     return {"message": "Hello from main"}
 
 
+@app.post("/")
+def post_root():
+    pass
 
-# uvicorn app.main:app --reload
+# run: uvicorn app.main:app --reload
