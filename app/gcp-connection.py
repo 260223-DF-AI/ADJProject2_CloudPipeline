@@ -1,3 +1,5 @@
+# testing big query connection
+
 from google.cloud import bigquery
 from google.oauth2 import service_account
 from dotenv import load_dotenv
