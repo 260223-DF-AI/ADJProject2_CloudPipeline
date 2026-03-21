@@ -27,7 +27,8 @@ file_handler.setFormatter(fomatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
-FILE_PATHS = [os.getenv("FILEPATH_ONE"), os.getenv("FILEPATH_TWO"), os.getenv("FILEPATH_THREE"), os.getenv("FILEPATH_FOUR")]
+
+#FILE_PATHS = [os.getenv("FILEPATH_ONE"), os.getenv("FILEPATH_TWO"), os.getenv("FILEPATH_THREE"), os.getenv("FILEPATH_FOUR")]
 OUTPUT_FILE = os.getenv("PARQUET_FILE") # one big parquet file
 CHUNK_SIZE = 50000 # 50,000 rows chunking at a time
 
@@ -67,10 +68,25 @@ def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
 
 
 def parquet_to_gcs(parquetFile: str):
-    pass
+    logger.info(f"Uploading {parquetFile} to GCS")
+    bucket_name = os.getenv("BUCKET_NAME")
+    # make client and bucket
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+
+    # get base file name from parquet file and not the entire path
+    file_name = os.path.basename(parquetFile)
+    blob = bucket.blob(file_name)
+
+    blob.upload_from_filename(parquetFile)
+
+    logger.info(f"Uploaded {parquetFile} to gs://{bucket_name}/{file_name}")
 
 
 
-csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
+if __name__ == "__main__":
+
+    #csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
+    parquet_to_gcs(OUTPUT_FILE)
 
 # print(f"sales-data.parquet mb size: {os.path.getsize("/Users/mehta/Desktop/Revature/RevatureGitHubFiles/ADJProject2_CloudPipeline/data/sales-data.parquet") / 1024 / 1024}")
