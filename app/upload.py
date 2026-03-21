@@ -30,7 +30,6 @@ logger.addHandler(file_handler)
 
 #FILE_PATHS = [os.getenv("FILEPATH_ONE"), os.getenv("FILEPATH_TWO"), os.getenv("FILEPATH_THREE"), os.getenv("FILEPATH_FOUR")]
 OUTPUT_FILE = os.getenv("PARQUET_FILE") # one big parquet file
-print("output file path: ", OUTPUT_FILE)
 CHUNK_SIZE = 50000 # 50,000 rows chunking at a time
 
 def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
