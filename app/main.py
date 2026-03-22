@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .routers import apiroutes
-from upload import csv_to_parquet, FILE_PATHS, OUTPUT_FILE
+from .upload import csv_to_parquet, FILE_PATHS, OUTPUT_FILE
 from dotenv import load_dotenv
 import os
 
@@ -19,9 +19,9 @@ def get_root():
     return {"message": "Hello from main"}
 
 
-@app.post("/convert")
+@app.post("/")
 def post_root():
-    pass
-    # csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
+    csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
+    return {"message": "CSV to Parquet conversion complete"}
 
 # run: uvicorn app.main:app --reload
