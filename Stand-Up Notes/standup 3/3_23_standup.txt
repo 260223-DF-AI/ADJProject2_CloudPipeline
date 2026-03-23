@@ -1,0 +1,10 @@
+done:
+andy : upload to GCS via python done
+Jaisel : API resource to post uploading to GCS
+Dio : wrote the GET resource for analysis for bucket
+
+
+What we're going to do : complete resources ( more gets/post resources) for querying database
+
+
+blockers: IAM access
