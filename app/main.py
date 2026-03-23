@@ -26,9 +26,9 @@ def get_bq_client():
 
 def prep_query():
     """Format the SQL query we want to run into BigQuery"""
-    table_id = "project2cloudpipelinere.parquet_file_storage_project2.sales-data"
+    table_id = "project2-cloudpipeline.sales_dataset.sales-data"
     query = f"""
-    SELECT TransactionID
+    SELECT StoreLocation
     FROM `{table_id}`
     WHERE TransactionID = 1
     """
@@ -43,10 +43,10 @@ async def get_item_test(item_id: int, bq_client: bigquery.client.Client = Depend
     try:
         bq_client = bigquery.Client()
         query_job = bq_client.query(query)
-        result = query_job.query().to_dataframe()
+        result = query_job.result().to_dataframe()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
-    return result
+    return result.to_dict(orient="records")
 
 
 @app.post("/convert")
