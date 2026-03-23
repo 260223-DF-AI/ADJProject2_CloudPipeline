@@ -81,7 +81,25 @@ def file_hash(file_path: str, algorithm: str = "md5") -> str:
 
 
 
-def parquet_to_gcs(parquetFile: str):
+def parquet_to_gcs(parquet_file : str):
+    """tries up to 3 times to upload, quits if fails 3 times wait 2s in between attempts"""
+    for attempt in range(1,4): # try 3 times to upload
+        try:
+            _parquet_to_gcs(parquet_file)
+            return
+        except Exception as e: # caught some sort of GCS error I dont know them
+            import time
+            if attempt < 3:
+                logger.error(f"attempt {attempt} to upload to GCS failed because:{e}")
+                time.sleep(2)
+            else:
+                logger.error("max attempts reached, stopping attempts")
+                return
+
+
+
+def _parquet_to_gcs(parquetFile: str):
+    """helper function to upload to GCS, does 1 instance"""
     logger.info(f"Uploading {parquetFile} to GCS")
     bucket_name = os.getenv("BUCKET_NAME")
     # make client and bucket
