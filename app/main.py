@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Depends
+from fastapi import FastAPI, Query, Depends, HTTPException
 from .routers import apiroutes
 from .upload import csv_to_parquet, parquet_to_gcs, FILE_PATHS, OUTPUT_FILE
 from dotenv import load_dotenv
@@ -15,6 +15,10 @@ app = FastAPI(
 
 app.include_router(apiroutes.router)
 
+@app.get("/")
+def get_root():
+    return {"message": "Hello from main"}
+
 def get_bq_client():
     """Connect to BigQuery"""
     with bigquery.Client() as client:
@@ -22,21 +26,26 @@ def get_bq_client():
 
 def prep_query():
     """Format the SQL query we want to run into BigQuery"""
-    bucket_name = os.getenv("BUCKET_NAME")
-    query = """
-    SELECT ...
-    FROM `bigquery...`
+    table_id = "project2cloudpipelinere.parquet_file_storage_project2.sales-data"
+    query = f"""
+    SELECT TransactionID
+    FROM `{table_id}`
+    WHERE TransactionID = 1
     """
     return query
 
-@app.get("/")
+@app.get("/gcs-query")
 async def get_item_test(item_id: int, bq_client: bigquery.client.Client = Depends(get_bq_client)):
+    """
+    Handles GET requests to the gcs-query URL and queries BigQuery.
+    """
     query = prep_query()
-
-    bq_client = bigquery.Client()
-    query_job = bq_client.query(query)
-    result = query_job.query().to_dataframe()
-
+    try:
+        bq_client = bigquery.Client()
+        query_job = bq_client.query(query)
+        result = query_job.query().to_dataframe()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     return result
 
 
