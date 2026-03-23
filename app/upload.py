@@ -7,6 +7,8 @@ from io import BytesIO
 import pyarrow as pa
 import pyarrow.parquet as pq
 from dotenv import load_dotenv
+import hashlib
+
 
 import os
 import logging
@@ -68,6 +70,17 @@ def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
     return 0
 
 
+# this is code to hash using md5, what gsutil uses
+def file_hash(file_path: str, algorithm: str = "md5") -> str:
+    """Compute the hash of a local file in chunks."""
+    h = hashlib.new(algorithm)
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(8 * 1024 * 1024), b""):  # 8MB chunks
+            h.update(chunk)
+    return h.hexdigest()
+
+
+
 def parquet_to_gcs(parquetFile: str):
     logger.info(f"Uploading {parquetFile} to GCS")
     bucket_name = os.getenv("BUCKET_NAME")
@@ -77,11 +90,29 @@ def parquet_to_gcs(parquetFile: str):
 
     # get base file name from parquet file and not the entire path
     file_name = os.path.basename(parquetFile)
-    blob = bucket.blob(file_name)
 
+
+    streaming_chunk_size = 128*1024*1024 # stream 128 mb at a time
+    blob = bucket.blob(file_name) # Blob object for GCS interaction
+
+    # hash using our md5 algo
+    local_hash = file_hash(parquetFile)
+
+    # check if file exists in GCS
+    if blob.exists():
+        # get GCS MD5 hash (stored in base64, convert to hex)
+        blob.reload()  # fetch metadata from GCS
+        metadata = blob.metadata or {}
+        if metadata.get("md5_hash") == local_hash: # SAME FILE
+            logger.info(f"Attempted to upload but the data is unchaged on GCS:{file_name} ")
+            return
+
+
+    # upload!
+    blob.chunk_size = streaming_chunk_size # set streaming chunk size
+    blob.metadata = {"md5_hash": local_hash} # set hash on upload
     blob.upload_from_filename(parquetFile)
-
-    logger.info(f"Uploaded {parquetFile} to gs://{bucket_name}/{file_name}")
+    logger.info(f"SUCCESS Uploaded {parquetFile} to gs://{bucket_name}/{file_name}")
 
 
 

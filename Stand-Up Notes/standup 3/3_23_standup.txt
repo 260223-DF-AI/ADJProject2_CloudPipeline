@@ -5,6 +5,6 @@ Dio : wrote the GET resource for analysis for bucket
 
 
 What we're going to do : complete resources ( more gets/post resources) for querying database
-
+implement cloud guard hashing + chunk streaming to GCS
 
 blockers: IAM access
