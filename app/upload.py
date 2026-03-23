@@ -28,11 +28,12 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
-FILE_PATHS = [os.getenv("FILEPATH_ONE"), os.getenv("FILEPATH_TWO"), os.getenv("FILEPATH_THREE"), os.getenv("FILEPATH_FOUR")]
-OUTPUT_FILE = os.getenv("PARQUET_FILE") # one big parquet file
-CHUNK_SIZE = 50000 # 50,000 rows chunking at a time
+#FILE_PATHS = [os.getenv("SALES_CSV1"), os.getenv("SALES_CSV2"), os.getenv("SALES_CSV3"), os.getenv("SALES_CSV4")]
+#OUTPUT_FILE = os.getenv("PARQUET_FILE") # one big parquet file
+#CHUNK_SIZE = 50000 # 50,000 rows chunking at a time
 
 def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
+    CHUNK_SIZE = 50000
     first_chunk = True
     parquet_writer = None # dedicated object to write to parquet files
     for csv_file in csvFilePaths:
@@ -85,7 +86,7 @@ def parquet_to_gcs(parquetFile: str):
 
 
 if __name__ == "__main__":
-
+    OUTPUT_FILE = os.getenv("PARQUET_FILE")
     # csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
     parquet_to_gcs(OUTPUT_FILE)
 
