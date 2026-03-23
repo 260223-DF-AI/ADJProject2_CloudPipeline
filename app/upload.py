@@ -28,7 +28,7 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
-FILE_PATHS = [os.getenv("FILEPATH_ONE"), os.getenv("FILEPATH_TWO"), os.getenv("FILEPATH_THREE"), os.getenv("FILEPATH_FOUR")]
+FILE_PATHS = [os.getenv("SALES_CSV1"), os.getenv("SALES_CSV2"), os.getenv("SALES_CSV3"), os.getenv("SALES_CSV4")]
 OUTPUT_FILE = os.getenv("PARQUET_FILE") # one big parquet file
 CHUNK_SIZE = 50000 # 50,000 rows chunking at a time
 
