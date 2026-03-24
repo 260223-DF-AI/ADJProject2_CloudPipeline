@@ -1,0 +1,13 @@
+what we did:
+finished all our resources
+finished cleaning data
+finished iam access
+
+what were gonna get done
+- benchmark reporting 
+- extra resources
+- building a streamlit app to display
+
+
+blockers
+none
