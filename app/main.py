@@ -115,10 +115,32 @@ async def get_item_test(CustomerID, bq_client: bigquery.client.Client = Depends(
 @app.get("/top-n-products-by-quantity")
 def get_top_N_products(n: int):
     query = """
-        SELECT ProductName, SUM(CAST(Quantity AS INT64)) AS Quantity
+        SELECT ProductName, SUM(Quantity) AS Quantity
         FROM `project2-cloudpipeline.sales_dataset.sales-data`
         GROUP BY ProductName
         ORDER BY Quantity DESC
+        LIMIT @n
+    """
+    try:
+        bq_client = bigquery.Client()
+        job_config = bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("n", "INT64", n)
+            ]
+        )
+        query_job = bq_client.query(query, job_config=job_config)
+        result = query_job.result().to_dataframe()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    return result.to_dict(orient="records")
+
+@app.get("/top-n-products-by-revenue")
+def get_top_N_products_rev(n: int):
+    query = """
+        SELECT ProductName, SUM(TotalAmount) AS Total_Sales
+        FROM `project2-cloudpipeline.sales_dataset.sales-data`
+        GROUP BY ProductName
+        ORDER BY Total_Sales DESC
         LIMIT @n
     """
     try:
