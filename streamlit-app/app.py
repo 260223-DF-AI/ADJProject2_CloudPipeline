@@ -54,7 +54,7 @@ if page == "Data Pipeline":
     st.warning("This will overwrite the existing Parquet file in GCS. Proceed with caution.")
 
     if st.button("Run Pipeline", type="primary"):
-        with st.spinner("Running conversion and upload — this may take a moment…"):
+        with st.spinner("Running conversion and upload to BigQuery — this may take a moment…"):
             try:
                 resp = requests.post(f"{API_BASE_URL}/convert", timeout=120)
                 resp.raise_for_status()
@@ -82,7 +82,7 @@ elif page == "Manage Table":
     )
 
     if st.button("Create Table", type="primary"):
-        with st.spinner("Creating table…"):
+        with st.spinner("Creating table in BigQuery — this may take a moment…"):
             data, err = call_api("/creating_table")
 
         if err:
@@ -104,7 +104,7 @@ elif page == "Manage Table":
     confirm = st.checkbox("I understand this will delete the table")
 
     if st.button("Delete Table", type="primary", disabled=not confirm):
-        with st.spinner("Deleting table…"):
+        with st.spinner("Deleting table in BigQuery — this may take a moment…"):
             try:
                 resp = requests.delete(f"{API_BASE_URL}/delete-table", timeout=30)
                 resp.raise_for_status()
@@ -131,7 +131,7 @@ elif page == "Customer Transactions":
         search = st.button("Search", type="primary", use_container_width=True)
 
     if search and customer_id:
-        with st.spinner("Querying BigQuery…"):
+        with st.spinner("Loading Customer Transaction data from BigQuery — this may take a moment…"):
             data, err = call_api("/query", {"CustomerID": customer_id})
 
         if err:
@@ -170,7 +170,7 @@ elif page == "Top Products":
     n = st.slider("Number of products to show", min_value=1, max_value=8, value=5)
     
     if st.button("Load Top Products", type="primary"):
-        with st.spinner("Querying BigQuery…"):
+        with st.spinner("Loading Top Products from BigQuery — this may take a moment…"):
             data, err = call_api("/top-n-products-by-quantity", {"n": n})
 
         if err:
@@ -208,7 +208,7 @@ elif page == "Top Products":
     n_rev = st.slider("Number of products to show", min_value=1, max_value=8, value=5, key="n_rev")
 
     if st.button("Load Top Products by Revenue", type="primary"):
-        with st.spinner("Querying BigQuery…"):
+        with st.spinner("Loading Top Products by Revenue from BigQuery — this may take a moment…"):
             data, err = call_api("/top-n-products-by-revenue", {"n": n_rev})
 
         if err:
@@ -244,7 +244,7 @@ elif page == "Top Products":
     st.header("💰 Sales by Region")
 
     if st.button("Load Total Sales by Region", type="primary"):
-        with st.spinner("Querying BigQuery…"):
+        with st.spinner("Loading Sales by Region from BigQuery — this may take a moment…"):
             data, err = call_api("/sales-by-region")
 
         if err:
@@ -280,7 +280,7 @@ elif page == "Dataset Overview":
     st.header("📋 Dataset Overview")
 
     if st.button("Get Total Record Count", type="primary"):
-        with st.spinner("Querying BigQuery…"):
+        with st.spinner("Loading Dataset Overview"):
             data, err = call_api("/total-file-length")
 
         if err:

@@ -212,5 +212,3 @@ def get_total_length(bq_client: bigquery.client.Client = Depends(get_bq_client))
     totalTime = time.time() - start
     logger.info(f"Total File Length Query, time taken: {totalTime}")
     return result.to_dict(orient="records")
-
-# run: uvicorn app.main:app --reload
