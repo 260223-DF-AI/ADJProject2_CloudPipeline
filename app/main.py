@@ -122,6 +122,7 @@ def get_top_N_products(n: int):
         LIMIT @n
     """
     try:
+        start = time.time()
         bq_client = bigquery.Client()
         job_config = bigquery.QueryJobConfig(
             query_parameters=[
@@ -132,6 +133,8 @@ def get_top_N_products(n: int):
         result = query_job.result().to_dataframe()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    totalTime = time.time() - start
+    logger.info(f"Top N Products (Qunatity), time taken: {totalTime}")
     return result.to_dict(orient="records")
 
 @app.get("/top-n-products-by-revenue")
@@ -144,6 +147,7 @@ def get_top_N_products_rev(n: int):
         LIMIT @n
     """
     try:
+        start = time.time()
         bq_client = bigquery.Client()
         job_config = bigquery.QueryJobConfig(
             query_parameters=[
@@ -154,6 +158,8 @@ def get_top_N_products_rev(n: int):
         result = query_job.result().to_dataframe()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    totalTime = time.time() - start
+    logger.info(f"Top N Products (Revenue), time taken: {totalTime}")
     return result.to_dict(orient="records")
 
 @app.get("/total-file-length")
@@ -166,10 +172,35 @@ def get_total_length(bq_client: bigquery.client.Client = Depends(get_bq_client))
             from `project2-cloudpipeline.sales_dataset.sales-data`
             """
     try:
+        start = time.time()
         bq_client = bigquery.Client()
         query_job = bq_client.query(query)
         result = query_job.result().to_dataframe()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    totalTime = time.time() - start
+    logger.info(f"Total File Length Query, time taken: {totalTime}")
+    return result.to_dict(orient="records")
+
+@app.get("/sales-by-region")
+def get_sales_region(bq_client: bigquery.client.Client = Depends(get_bq_client)):
+    """
+    Handles GET requests to the gcs-query URL and queries BigQuery for sales by region.
+    """
+    query = f"""
+            SELECT Region, SUM(TotalAmount) AS total_sales
+            FROM `project2-cloudpipeline.sales_dataset.sales-data`
+            GROUP BY Region
+            ORDER BY total_sales DESC;
+            """
+    try:
+        start = time.time()
+        bq_client = bigquery.Client()
+        query_job = bq_client.query(query)
+        result = query_job.result().to_dataframe()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    totalTime = time.time() - start
+    logger.info(f"Sales by Region Query, time taken: {totalTime}")
     return result.to_dict(orient="records")
 # run: uvicorn app.main:app --reload
