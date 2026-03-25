@@ -52,7 +52,7 @@ def post_root():
     logger.info(f"Parquet to GSC complete, time taken: {totalTime}")
     return {"message": "CSV to Parquet conversion and Parquet to GSC complete"}
 
-@app.delete("/remove-table")
+@app.delete("/delete-table")
 def remove_table():
     table_id = "project2-cloudpipeline.sales_dataset.sales-data"
     
@@ -62,7 +62,7 @@ def remove_table():
     except Exception as e:
         logger.info(f"Exception caught: {e}")
         raise Exception
-    return {"message", "sales-data table deleted"}
+    return {"message": "sales-data table deleted"}
 
 @app.get("/creating_table")
 def query():
@@ -76,10 +76,10 @@ def query():
         bq_client = bigquery.Client()
         query_job = bq_client.query(query_statement)
         result = query_job.result().to_dataframe()
-        # return {"message", "sales-data table created"}
+        # return {"message": "sales-data table created"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
-    return {"message", "sales-data table created"}
+    return {"message": "sales-data table created"}
 
 def prep_query(customerid):
     """Format the SQL query we want to run into BigQuery"""
