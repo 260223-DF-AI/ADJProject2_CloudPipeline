@@ -27,6 +27,7 @@ grpcio==1.78.0
 grpcio-status==1.78.0
 h11==0.16.0
 idna==3.11
+iniconfig==2.3.0
 Jinja2==3.1.6
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
@@ -37,6 +38,7 @@ packaging==26.0
 pandas==2.3.3
 pillow==12.1.1
 plotly==6.6.0
+pluggy==1.6.0
 proto-plus==1.27.1
 protobuf==6.33.5
 psycopg2==2.9.11
@@ -47,6 +49,8 @@ pycparser==3.0
 pydantic==2.12.5
 pydantic_core==2.41.5
 pydeck==0.9.1
+Pygments==2.19.2
+pytest==9.0.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
 pytz==2026.1.post1

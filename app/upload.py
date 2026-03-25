@@ -149,6 +149,6 @@ def _parquet_to_gcs(parquetFile: str):
 if __name__ == "__main__":
     OUTPUT_FILE = os.getenv("PARQUET_FILE")
     # csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
-    parquet_to_gcs(OUTPUT_FILE)
+    # parquet_to_gcs(OUTPUT_FILE)
 
 # print(f"sales-data.parquet mb size: {os.path.getsize("/Users/mehta/Desktop/Revature/RevatureGitHubFiles/ADJProject2_CloudPipeline/data/sales-data.parquet") / 1024 / 1024}")
