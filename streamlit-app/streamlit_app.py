@@ -174,7 +174,7 @@ def data_analysis():
                 st.success("Query successful!")
                 df = pd.DataFrame(result)
                 # display as line graph
-                st.line_chart(df.set_index('month')['Total_Sales'])
+                st.line_chart(df.set_index('month')['total_sales'])
                 # keep df in case we want to display it as a table as well
                 st.dataframe(df)
 

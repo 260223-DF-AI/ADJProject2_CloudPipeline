@@ -197,13 +197,14 @@ def get_sales_region(bq_client: bigquery.client.Client = Depends(get_bq_client))
 def get_sales_over_time():
     # gets the total amount sold over the year 2025 grouped by month
     query = """
-        SELECT 
-            EXTRACT(MONTH FROM SAFE.PARSE_DATE("%Y-%m-%d", Date)) AS month,
-            SUM(TotalAmount) AS Total_Sales
-        FROM `project2-cloudpipeline.sales_dataset.sales-data`
-        WHERE SAFE.PARSE_DATE("%Y-%m-%d", Date) BETWEEN DATE '2025-01-01' AND DATE '2025-12-31'
-        GROUP BY month
-        ORDER BY month ASC;
+            SELECT
+                EXTRACT(MONTH FROM SAFE.PARSE_DATE("%Y-%m-%d", Date)) AS month,
+                FORMAT_DATE("%B", DATE_TRUNC(SAFE.PARSE_DATE("%Y-%m-%d", Date), MONTH)) AS month_name,
+                SUM(TotalAmount) AS total_sales
+            FROM `project2-cloudpipeline.sales_dataset.sales-data`
+            WHERE SAFE.PARSE_DATE("%Y-%m-%d", Date) BETWEEN DATE '2025-01-01' AND DATE '2025-12-31'
+            GROUP BY month, month_name
+            ORDER BY month ASC;
     """
     try:
         start = time.time()
