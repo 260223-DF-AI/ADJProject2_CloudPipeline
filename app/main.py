@@ -52,18 +52,6 @@ def post_root():
     logger.info(f"Parquet to GSC complete, time taken: {totalTime}")
     return {"message": "CSV to Parquet conversion and Parquet to GSC complete"}
 
-@app.delete("/delete-table")
-def remove_table():
-    table_id = "project2-cloudpipeline.sales_dataset.sales-data"
-    
-    try:
-        bq_client = bigquery.Client()
-        bq_client.delete_table(table_id, not_found_ok=True)
-    except Exception as e:
-        logger.info(f"Exception caught: {e}")
-        raise Exception
-    return {"message": "sales-data table deleted"}
-
 @app.get("/creating_table")
 def query():
     query_statement = f"""
@@ -73,13 +61,31 @@ def query():
                         uris = ['gs://project2_files_adj/sales-data.parquet'])
                         """
     try:
+        start = time.time()
         bq_client = bigquery.Client()
         query_job = bq_client.query(query_statement)
         result = query_job.result().to_dataframe()
         # return {"message": "sales-data table created"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    totalTime = time.time() - start
+    logger.info(f"Table Created, time taken: {totalTime}")
     return {"message": "sales-data table created"}
+
+@app.delete("/delete-table")
+def remove_table():
+    table_id = "project2-cloudpipeline.sales_dataset.sales-data"
+    
+    try:
+        start = time.time()
+        bq_client = bigquery.Client()
+        bq_client.delete_table(table_id, not_found_ok=True)
+    except Exception as e:
+        logger.info(f"Exception caught: {e}")
+        raise Exception
+    totalTime = time.time() - start
+    logger.info(f"Table deleted, time taken: {totalTime}")
+    return {"message": "sales-data table deleted"}
 
 def prep_query(customerid):
     """Format the SQL query we want to run into BigQuery"""
@@ -105,11 +111,14 @@ async def get_item_test(CustomerID, bq_client: bigquery.client.Client = Depends(
     """
     query, job_config = prep_query(CustomerID)
     try:
+        start = time.time()
         bq_client = bigquery.Client()
         query_job = bq_client.query(query, job_config)
         result = query_job.result().to_dataframe()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    totalTime = time.time() - start
+    logger.info(f"Customer Recent Transaction Lookup, time taken: {totalTime}")
     return result.to_dict(orient="records")
 
 @app.get("/top-n-products-by-quantity")
@@ -134,7 +143,7 @@ def get_top_N_products(n: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
-    logger.info(f"Top N Products (Qunatity), time taken: {totalTime}")
+    logger.info(f"Top N Products (Quantity), time taken: {totalTime}")
     return result.to_dict(orient="records")
 
 @app.get("/top-n-products-by-revenue")
