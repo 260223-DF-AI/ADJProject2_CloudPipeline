@@ -75,6 +75,6 @@ def test_total_file_length_endpoint():
     response = requests.get(url)
     assert response.status_code == 200
     data = response.json()[0]
-    assert "Total_file_length" in data
-    assert data["Total_file_length"] == 1237450
+    assert "Total file length" in data, f"data:{data}"
+    assert data["Total file length"] == 1237450, f"Expected 1237450, got {data['Total_file_length']}"
     assert isinstance(data, dict)
