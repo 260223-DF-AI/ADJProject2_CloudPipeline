@@ -26,14 +26,14 @@ def test_bucket_exists_gcs():
     BUCKET = client.get_bucket(bucket)
     assert BUCKET.exists() == True
 
-# def test_creating_table_endpoint():
-#     url = f"{BASE_URL}/creating_table"
-#     response = requests.get(url)
-#     assert response.status_code == 200
-#     data = response.json()
-#     assert "message" in data
-#     assert data["message"] == "sales-data table created"
-#     assert isinstance(data, dict)
+def test_creating_table_endpoint():
+    url = f"{BASE_URL}/creating_table"
+    response = requests.get(url)
+    assert response.status_code == 200
+    data = response.json()
+    assert "message" in data
+    assert data["message"] == "sales-data table created"
+    assert isinstance(data, dict)
 
 def test_table_exists_gcs():
     table_path = "project2-cloudpipeline.sales_dataset.sales-data"

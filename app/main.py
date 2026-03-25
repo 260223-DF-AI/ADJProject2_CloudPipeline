@@ -40,6 +40,24 @@ def get_bq_client():
     """Connect to BigQuery"""
     with bigquery.Client() as client:
         return client
+    
+@app.get("/file-size-savings")
+def get_file_size_savings():
+    sales_csv1_size = os.path.getsize(os.getenv("SALES_CSV1"))
+    sales_csv2_size = os.path.getsize(os.getenv("SALES_CSV2"))
+    sales_csv3_size = os.path.getsize(os.getenv("SALES_CSV3"))
+    sales_csv4_size = os.path.getsize(os.getenv("SALES_CSV4"))
+    sales_csv5_size = os.path.getsize(os.getenv("SALES_CSV5"))
+    total_csv_size = sales_csv1_size + sales_csv2_size + sales_csv3_size + sales_csv4_size + sales_csv5_size
+    parquet_file_size = os.path.getsize(os.getenv("PARQUET_FILE"))
+    logger.info(f"Total CSV file size: {(total_csv_size / (1024 * 1024)):.2f} MB")
+    logger.info(f"Parquet file size: {(parquet_file_size / (1024 * 1024)):.2f} MB")
+    logger.info(f"File savings %: {((total_csv_size - parquet_file_size) / total_csv_size) * 100:.2f}%")
+    return {
+        "Total CSV file size": total_csv_size / (1024 * 1024),
+        "Parquet file size": parquet_file_size / (1024 * 1024),
+        "File savings %": ((total_csv_size - parquet_file_size) / total_csv_size) * 100
+    }
 
 @app.post("/convert")
 def post_root():
