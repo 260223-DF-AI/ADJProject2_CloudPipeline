@@ -40,7 +40,30 @@ def get_bq_client():
     """Connect to BigQuery"""
     with bigquery.Client() as client:
         return client
+
+@app.post("/convert")
+def post_root():
+    FILE_PATHS = [os.getenv("SALES_CSV1"), os.getenv("SALES_CSV2"), os.getenv("SALES_CSV3"), os.getenv("SALES_CSV4"), os.getenv("SALES_CSV5")]
+    OUTPUT_FILE = os.getenv("PARQUET_FILE")
+    csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
+    start = time.time()
+    parquet_to_gcs(OUTPUT_FILE)
+    totalTime = time.time() - start
+    logger.info(f"Parquet to GSC complete, time taken: {totalTime}")
+    return {"message": "CSV to Parquet conversion and Parquet to GSC complete"}
+
+@app.delete("/remove-table")
+def remove_table():
+    table_id = "project2-cloudpipeline.sales_dataset.sales-data"
     
+    try:
+        bq_client = bigquery.Client()
+        bq_client.delete_table(table_id, not_found_ok=True)
+    except Exception as e:
+        logger.info(f"Exception caught: {e}")
+        raise Exception
+    return {"message", "sales-data table deleted"}
+
 @app.get("/creating_table")
 def query():
     query_statement = f"""
@@ -127,16 +150,4 @@ def get_total_length(bq_client: bigquery.client.Client = Depends(get_bq_client))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     return result.to_dict(orient="records")
-
-@app.post("/convert")
-def post_root():
-    FILE_PATHS = [os.getenv("SALES_CSV1"), os.getenv("SALES_CSV2"), os.getenv("SALES_CSV3"), os.getenv("SALES_CSV4"), os.getenv("SALES_CSV5")]
-    OUTPUT_FILE = os.getenv("PARQUET_FILE")
-    csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
-    start = time.time()
-    parquet_to_gcs(OUTPUT_FILE)
-    totalTime = time.time() - start
-    logger.info(f"Parquet to GSC complete, time taken: {totalTime}")
-    return {"message": "CSV to Parquet conversion and Parquet to GSC complete"}
-
 # run: uvicorn app.main:app --reload
