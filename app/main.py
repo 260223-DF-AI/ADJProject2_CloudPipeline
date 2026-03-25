@@ -49,8 +49,8 @@ def post_root():
     start = time.time()
     parquet_to_gcs(OUTPUT_FILE)
     totalTime = time.time() - start
-    logger.info(f"Parquet to GSC complete, time taken: {totalTime}")
-    return {"message": "CSV to Parquet conversion and Parquet to GSC complete"}
+    logger.info(f"Parquet to GCS bucket complete, time taken: {totalTime} seconds")
+    return {"message": "CSV to Parquet conversion and Parquet to GCS bucket complete"}
 
 @app.get("/creating_table")
 def query():
@@ -69,7 +69,7 @@ def query():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
-    logger.info(f"Table Created, time taken: {totalTime}")
+    logger.info(f"Table Created, time taken: {totalTime} seconds")
     return {"message": "sales-data table created"}
 
 @app.delete("/delete-table")
@@ -84,7 +84,7 @@ def remove_table():
         logger.info(f"Exception caught: {e}")
         raise Exception
     totalTime = time.time() - start
-    logger.info(f"Table deleted, time taken: {totalTime}")
+    logger.info(f"Table deleted, time taken: {totalTime} seconds")
     return {"message": "sales-data table deleted"}
 
 def prep_query(customerid):
@@ -118,7 +118,7 @@ async def get_item_test(CustomerID, bq_client: bigquery.client.Client = Depends(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
-    logger.info(f"Customer Recent Transaction Lookup, time taken: {totalTime}")
+    logger.info(f"Customer Recent Transaction Lookup, time taken: {totalTime} seconds")
     return result.to_dict(orient="records")
 
 @app.get("/top-n-products-by-quantity")
@@ -143,7 +143,7 @@ def get_top_N_products(n: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
-    logger.info(f"Top N Products (Quantity), time taken: {totalTime}")
+    logger.info(f"Top N Products (Quantity), time taken: {totalTime} seconds")
     return result.to_dict(orient="records")
 
 @app.get("/top-n-products-by-revenue")
@@ -168,7 +168,7 @@ def get_top_N_products_rev(n: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
-    logger.info(f"Top N Products (Revenue), time taken: {totalTime}")
+    logger.info(f"Top N Products (Revenue), time taken: {totalTime} seconds")
     return result.to_dict(orient="records")
 
 @app.get("/sales-by-region")
@@ -190,7 +190,7 @@ def get_sales_region(bq_client: bigquery.client.Client = Depends(get_bq_client))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
-    logger.info(f"Sales by Region Query, time taken: {totalTime}")
+    logger.info(f"Sales by Region Query, time taken: {totalTime} seconds")
     return result.to_dict(orient="records")
 
 @app.get("/total-file-length")
@@ -210,5 +210,5 @@ def get_total_length(bq_client: bigquery.client.Client = Depends(get_bq_client))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
-    logger.info(f"Total File Length Query, time taken: {totalTime}")
+    logger.info(f"Total File Length Query, time taken: {totalTime} seconds")
     return result.to_dict(orient="records")

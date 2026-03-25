@@ -1,5 +1,6 @@
 # run this with: python -m streamlit run
 import streamlit as st
+import pandas as pd
 from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue, get_sales_by_region
 st.title("Sales Data Dashboard")
 
@@ -86,11 +87,11 @@ def data_analysis():
         if st.button("Query Sales Data"): # when button is pressed, run the query and return results
             st.write("Querying sales data please wait...")
             result = query_sales_data(customerid)
-            if "error" in result:
+            if isinstance(result, dict) and "error" in result:
                 st.error(f"Query failed: {result['error']}")
             else:
                 st.success("Query successful!")
-                st.dataframe(result)
+                st.dataframe(pd.DataFrame(result))
 
     st.write("  - [Get Top N Products by Quantity]")
     with st.expander("Get Top N Products by Quantity"):
@@ -101,13 +102,14 @@ def data_analysis():
         if st.button("Get Top N Products by Quantity"): # when button is pressed, run the query and return results
             st.write("Querying top N products by quantity sold please wait...")
             result = get_top_N_products_by_quantity(n)
-            if "error" in result:
+            if isinstance(result, dict) and "error" in result:
                 st.error(f"Query failed: {result['error']}")
             else:
                 st.success("Query successful!")
-                st.bar_chart(result.set_index('Product_Name')['Quantity'])
+                df = pd.DataFrame(result)
+                st.bar_chart(df.set_index('ProductName')['Quantity'])
                 # keep df in case we want to display it as a table as well
-                st.dataframe(result)
+                st.dataframe(df)
 
     with st.expander("Get Top N Products by Revenue"):
         st.write("""
@@ -117,14 +119,15 @@ def data_analysis():
         if st.button("Get Top N Products by Revenue"): # when button is pressed, run the query and return results
             st.write("Querying top N products by revenue please wait...")
             result = get_top_N_products_by_revenue(n)
-            if "error" in result:
+            if isinstance(result, dict) and "error" in result:
                 st.error(f"Query failed: {result['error']}")
             else:
                 st.success("Query successful!")
+                df = pd.DataFrame(result)
                 # display as barchart
-                st.bar_chart(result.set_index('Product_Name')['Total_Sales'])
+                st.bar_chart(df.set_index('ProductName')['Total_Sales'])
                 # keep df in case we want to display it as a table as well
-                st.dataframe(result)
+                st.dataframe(df)
 
     with st.expander("Get Sales By Region"):
         st.write("""
@@ -133,14 +136,15 @@ def data_analysis():
         if st.button("Get Sales By Region"): # when button is pressed, run the query and return results
             st.write("Querying sales by region please wait...")
             result = get_sales_by_region()
-            if "error" in result:
+            if isinstance(result, dict) and "error" in result:
                 st.error(f"Query failed: {result['error']}")
             else:
                 st.success("Query successful!")
+                df = pd.DataFrame(result)
                 # display as barchart
-                st.bar_chart(result.set_index('Region')['Total_Sales'])
+                st.bar_chart(df.set_index('Region')['Total_Sales'])
                 # keep df in case we want to display it as a table as well
-                st.dataframe(result)
+                st.dataframe(df)
 
 
     if st.button("Home"):
