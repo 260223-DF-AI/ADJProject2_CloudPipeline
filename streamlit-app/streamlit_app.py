@@ -1,6 +1,6 @@
 # run this with: python -m streamlit run
 import streamlit as st
-from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue
+from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue, get_sales_by_region
 st.title("Sales Data Dashboard")
 
 # Set background image
@@ -105,6 +105,8 @@ def data_analysis():
                 st.error(f"Query failed: {result['error']}")
             else:
                 st.success("Query successful!")
+                st.bar_chart(result.set_index('Product_Name')['Quantity'])
+                # keep df in case we want to display it as a table as well
                 st.dataframe(result)
 
     with st.expander("Get Top N Products by Revenue"):
@@ -119,9 +121,26 @@ def data_analysis():
                 st.error(f"Query failed: {result['error']}")
             else:
                 st.success("Query successful!")
+                # display as barchart
+                st.bar_chart(result.set_index('Product_Name')['Total_Sales'])
+                # keep df in case we want to display it as a table as well
                 st.dataframe(result)
 
-
+    with st.expander("Get Sales By Region"):
+        st.write("""
+        This will query the sales data table in BigQuery and return the sales data by region
+        """)
+        if st.button("Get Sales By Region"): # when button is pressed, run the query and return results
+            st.write("Querying sales by region please wait...")
+            result = get_sales_by_region()
+            if "error" in result:
+                st.error(f"Query failed: {result['error']}")
+            else:
+                st.success("Query successful!")
+                # display as barchart
+                st.bar_chart(result.set_index('Region')['Total_Sales'])
+                # keep df in case we want to display it as a table as well
+                st.dataframe(result)
 
 
     if st.button("Home"):

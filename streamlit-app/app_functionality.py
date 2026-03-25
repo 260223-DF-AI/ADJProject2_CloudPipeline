@@ -35,7 +35,7 @@ def delete_table_bigquery():
 def query_sales_data(customerid):
     try:
         # Pass query parameters in the URL
-        params = {"customerId": customerid}
+        params = {"CustomerID": customerid}
         resp = requests.get(f"{API_BASE_URL}/query", params=params, timeout=100)
         resp.raise_for_status()  # Raises an exception for HTTP errors
         result = resp.json()
@@ -58,6 +58,16 @@ def get_top_N_products_by_revenue(n):
     try:
         params = {"n": n}
         resp = requests.get(f"{API_BASE_URL}/top-n-products-by-revenue", params=params, timeout=100)
+        resp.raise_for_status()
+        result = resp.json()
+        return result
+    except requests.RequestException as e:
+        return {"error": str(e)}
+    
+
+def get_sales_by_region():
+    try:
+        resp = requests.get(f"{API_BASE_URL}/sales-by-region", timeout=100)
         resp.raise_for_status()
         result = resp.json()
         return result
