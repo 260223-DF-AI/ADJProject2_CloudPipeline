@@ -27,14 +27,14 @@ def home():
     set_bg("https://imgs.search.brave.com/Fk3GEt9ZUF7DhzO9AsorcQ2jS_6DncEXkKktAGhLwYk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMDIv/MDYzLzAyMy9zbWFs/bC9hYnN0cmFjdC10/ZWNobm9sb2d5LWJh/Y2tncm91bmQtd2l0/aC1iaWctZGF0YS1p/bnRlcm5ldC1jb25u/ZWN0aW9uLWFic3Ry/YWN0LXNlbnNlLW9m/LXNjaWVuY2UtYW5k/LXRlY2hub2xvZ3kt/YW5hbHl0aWNzLWNv/bmNlcHQtZ3JhcGhp/Yy1kZXNpZ24taWxs/dXN0cmF0aW9uLXZl/Y3Rvci5qcGc")
     st.header("Available Resources")
     st.subheader("GCP Setup Resources")
-    st.write("  - [Convert CSV to Parquet]")
-    st.write("  - [Create table in BigQuery]")
-    st.write("  - [Delete Data from BigQuery]")
+    st.write("  - Convert CSV to Parquet")
+    st.write("  - Create table in BigQuery")
+    st.write("  - Delete Data from BigQuery")
 
     st.subheader("Data Analysis Resources")
-    st.write("  - [Query Sales Data]")
-    st.write("  - [Get Top N Products by Quantity]")
-    st.write("  - [Get Top N Products by Revenue]")
+    st.write("  - Query Sales Data")
+    st.write("  - Get Top N Products by Quantity")
+    st.write("  - Get Top N Products by Revenue")
 
     # buttons to navigate
     if st.button("Setup GCP"):
@@ -95,7 +95,6 @@ def gcp_setup():
 # data analysis page with all our data analysis resources
 def data_analysis():
     set_bg("https://imgs.search.brave.com/wvsLWVoESuUraDWUh6iDqueD-8AvyZAtYzWEzykY-RA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMDMv/MDMwLzgwOS9zbWFs/bC9iaWctZGF0YS1h/bmFseXNpcy1pc29t/ZXRyaWMtYmFja2dy/b3VuZC1pbGx1c3Ry/YXRpb24tdmVjdG9y/LmpwZw")
-    st.write("  - [Query Sales Data]")
     with st.expander("Query Sales Data"):
         st.write("""
         This will query the sales data table in BigQuery and return the results as a dataframe
@@ -110,7 +109,6 @@ def data_analysis():
                 st.success("Query successful!")
                 st.dataframe(pd.DataFrame(result))
 
-    st.write("  - [Get Top N Products by Quantity]")
     with st.expander("Get Top N Products by Quantity"):
         st.write("""
         This will query the sales data table in BigQuery and return the top N products by quantity sold
