@@ -70,9 +70,6 @@ def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
         except ArrowIOError as e:
             logger.warning(f"I/O error: {e}")
             raise RuntimeError(f"PyArrow I/O error: {e}")
-        except FileNotFoundError as e:
-            logger.warning(f"File not found. Error message: {e}")
-            raise FileNotFoundError("Filepath wrong e: ",e)
         except Exception as e:
             logger.error(f"An unexpected error occurred. Error message: {e}")
             exit(-1) # quit now, we need to fix this
