@@ -1,0 +1,136 @@
+# run this with: python -m streamlit run
+import streamlit as st
+from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue
+st.title("Sales Data Dashboard")
+
+# Set background image
+def set_bg(img_url):
+    css = f"""
+    <style>
+    .stApp {{
+        background-image: url('{img_url}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
+    </style>
+    """
+    st.markdown(css, unsafe_allow_html=True)
+
+# session state to monitor what page the user is on
+if "page" not in st.session_state:
+    st.session_state.page = "home"
+
+# Home page with descriptions of resources and buttons to navigate to different pages
+def home():
+    set_bg("https://imgs.search.brave.com/Fk3GEt9ZUF7DhzO9AsorcQ2jS_6DncEXkKktAGhLwYk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMDIv/MDYzLzAyMy9zbWFs/bC9hYnN0cmFjdC10/ZWNobm9sb2d5LWJh/Y2tncm91bmQtd2l0/aC1iaWctZGF0YS1p/bnRlcm5ldC1jb25u/ZWN0aW9uLWFic3Ry/YWN0LXNlbnNlLW9m/LXNjaWVuY2UtYW5k/LXRlY2hub2xvZ3kt/YW5hbHl0aWNzLWNv/bmNlcHQtZ3JhcGhp/Yy1kZXNpZ24taWxs/dXN0cmF0aW9uLXZl/Y3Rvci5qcGc")
+    st.header("Available Resources")
+    st.subheader("GCP Setup Resources")
+    st.write("  - [Convert CSV to Parquet]")
+    st.write("  - [Create table in BigQuery]")
+    st.write("  - [Delete Data from BigQuery]")
+
+    st.subheader("Data Analysis Resources")
+    st.write("  - [Query Sales Data]")
+    st.write("  - [Get Top N Products by Quantity]")
+    st.write("  - [Get Top N Products by Revenue]")
+
+    # buttons to navigate
+    if st.button("Setup GCP"):
+        st.session_state.page = "gcp_setup"
+    if st.button("Data Analysis"):
+        st.session_state.page = "data_analysis"
+
+
+# page with all our GCP stuff
+def gcp_setup():
+    set_bg("https://imgs.search.brave.com/0WxkNghrTCt2nNry80Aj8jPgaWLPVoJmgBVQqx0USas/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJhY2Nlc3Mu/Y29tL2Z1bGwvOTQ3/ODQxOC5wbmc")
+    st.header("GCP Setup Resources")
+    # --- Description of GCP setup steps ---
+    with st.expander("Start ETL Pipeline here"):
+        st.write("""
+        The following will happen:
+        1. Transforms your local CSV file into parquet format
+        2. Uploads the parquet file to GCS
+        3. Creates an external table in BigQuery
+        """)
+    
+        if st.button("Run ETL Pipeline"):
+            st.write("Running pipeline please wait...")
+            test = run_pipeline()
+            if test == "OK":
+                st.success("ETL Pipeline started successfully!")
+            else:
+                st.error(f"ETL Pipeline failed: {test}")
+
+    with st.expander("Delete tables from BigQuery"):
+        st.write("""
+        This will delete the external table in BigQuery
+        """)
+        if st.button("Delete BigQuery Table"):
+            st.write("Deleting BigQuery table please wait...")
+            delete_table_bigquery()
+            st.success("BigQuery table deleted successfully!")
+    if st.button("Home"):
+        st.session_state.page = "home"
+
+# data analysis page with all our data analysis resources
+def data_analysis():
+    set_bg("https://imgs.search.brave.com/wvsLWVoESuUraDWUh6iDqueD-8AvyZAtYzWEzykY-RA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMDMv/MDMwLzgwOS9zbWFs/bC9iaWctZGF0YS1h/bmFseXNpcy1pc29t/ZXRyaWMtYmFja2dy/b3VuZC1pbGx1c3Ry/YXRpb24tdmVjdG9y/LmpwZw")
+    st.write("  - [Query Sales Data]")
+    with st.expander("Query Sales Data"):
+        st.write("""
+        This will query the sales data table in BigQuery and return the results as a dataframe
+        """)
+        customerid = st.text_input("Enter Customer ID to query sales data for:")
+        if st.button("Query Sales Data"): # when button is pressed, run the query and return results
+            st.write("Querying sales data please wait...")
+            result = query_sales_data(customerid)
+            if "error" in result:
+                st.error(f"Query failed: {result['error']}")
+            else:
+                st.success("Query successful!")
+                st.dataframe(result)
+
+    st.write("  - [Get Top N Products by Quantity]")
+    with st.expander("Get Top N Products by Quantity"):
+        st.write("""
+        This will query the sales data table in BigQuery and return the top N products by quantity sold
+        """)
+        n = st.number_input("Enter N to query top N products by quantity sold:", min_value=1, step=1)
+        if st.button("Get Top N Products by Quantity"): # when button is pressed, run the query and return results
+            st.write("Querying top N products by quantity sold please wait...")
+            result = get_top_N_products_by_quantity(n)
+            if "error" in result:
+                st.error(f"Query failed: {result['error']}")
+            else:
+                st.success("Query successful!")
+                st.dataframe(result)
+
+    with st.expander("Get Top N Products by Revenue"):
+        st.write("""
+        This will query the sales data table in BigQuery and return the top N products by revenue
+        """)
+        n = st.number_input("Enter N to query top N products by revenue:", min_value=1, step=1)
+        if st.button("Get Top N Products by Revenue"): # when button is pressed, run the query and return results
+            st.write("Querying top N products by revenue please wait...")
+            result = get_top_N_products_by_revenue(n)
+            if "error" in result:
+                st.error(f"Query failed: {result['error']}")
+            else:
+                st.success("Query successful!")
+                st.dataframe(result)
+
+
+
+
+    if st.button("Home"):
+        st.session_state.page = "home"
+
+# Session state tracker
+if st.session_state.page == "home":
+    home()
+elif st.session_state.page == "gcp_setup":
+    gcp_setup()
+elif st.session_state.page == "data_analysis":
+    data_analysis()
