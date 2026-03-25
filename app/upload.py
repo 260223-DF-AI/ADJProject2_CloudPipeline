@@ -8,7 +8,9 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from dotenv import load_dotenv
 import hashlib
-
+from pyarrow.lib import ArrowIOError
+import datetime as dt
+from word2number import w2n
 
 import os
 import logging
@@ -34,6 +36,13 @@ logger.addHandler(file_handler)
 #OUTPUT_FILE = os.getenv("PARQUET_FILE") # one big parquet file
 #CHUNK_SIZE = 50000 # 50,000 rows chunking at a time
 
+def string_num_to_int(strNum: str):
+    try:
+        num = int(strNum)
+        return num
+    except ValueError as e:
+        return w2n.word_to_num(strNum.lower())
+
 def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
     CHUNK_SIZE = 50000
     first_chunk = True
@@ -44,6 +53,9 @@ def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
         try:
             for chunk in pd.read_csv(csv_file, chunksize=CHUNK_SIZE):
                 logger.info(f"Processing and reading file: {csv_file}")
+                chunk.dropna(inplace=True)
+                # chunk["Date"] = pd.to_datetime(chunk["Date"], format="mixed", errors="coerce")
+                chunk["Quantity"] = chunk["Quantity"].apply(string_num_to_int)
                 # chunk in one chunk of CSV data and convert to PyArrow Table
                 table = pa.Table.from_pandas(chunk)
                 # make parquet writer if this is first_chunk
@@ -55,7 +67,7 @@ def csv_to_parquet(csvFilePaths: list, outputFilePaths: str):
         except pd.errors.ParserError as e:
             logger.warning(f"Error parsing the CSV file. Error message: {e}")
             raise RuntimeError("Something went wrong with the parsing, try again e:",e)
-        except pq.ArrowIOError as e:
+        except ArrowIOError as e:
             logger.warning(f"I/O error: {e}")
             raise RuntimeError(f"PyArrow I/O error: {e}")
         except FileNotFoundError as e:
