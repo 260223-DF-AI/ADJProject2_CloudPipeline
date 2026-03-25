@@ -72,6 +72,23 @@ def gcp_setup():
             st.write("Deleting BigQuery table please wait...")
             delete_table_bigquery()
             st.success("BigQuery table deleted successfully!")
+
+
+    log_file_path = "./../reporting.log"
+
+    with st.expander("View Utility Report File"):
+        st.write("Showing contents of the log file:")
+
+        try:
+            # open and read the log file
+            with open(log_file_path, "r") as f:
+                log_text = f.read()
+
+            # display the log text in Streamlit
+            st.text(log_text)  
+
+        except FileNotFoundError:
+            st.error(f"Log file not found: {log_file_path}")
     if st.button("Home"):
         st.session_state.page = "home"
 
