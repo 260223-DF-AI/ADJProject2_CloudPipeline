@@ -193,6 +193,31 @@ def get_sales_region(bq_client: bigquery.client.Client = Depends(get_bq_client))
     logger.info(f"Sales by Region Query, time taken: {totalTime} seconds")
     return result.to_dict(orient="records")
 
+@app.get("/sales-over-time")
+def get_sales_over_time():
+    # gets the total amount sold over the year 2025 grouped by month
+    query = """
+        SELECT 
+            EXTRACT(MONTH FROM SAFE.PARSE_DATE("%Y-%m-%d", Date)) AS month,
+            SUM(TotalAmount) AS Total_Sales
+        FROM `project2-cloudpipeline.sales_dataset.sales-data`
+        WHERE SAFE.PARSE_DATE("%Y-%m-%d", Date) BETWEEN DATE '2025-01-01' AND DATE '2025-12-31'
+        GROUP BY month
+        ORDER BY month ASC;
+    """
+    try:
+        start = time.time()
+        bq_client = bigquery.Client()
+        query_job = bq_client.query(query)
+        result = query_job.result().to_dataframe()
+        # return {"message": "sales-data table created"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
+    totalTime = time.time() - start
+    logger.info(f"Sales over time Query, time taken: {totalTime} seconds")
+    return result.to_dict(orient="records")
+
+
 @app.get("/total-file-length")
 def get_total_length(bq_client: bigquery.client.Client = Depends(get_bq_client)):
     """

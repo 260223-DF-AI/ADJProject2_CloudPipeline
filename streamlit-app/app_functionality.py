@@ -73,3 +73,14 @@ def get_sales_by_region():
         return result
     except requests.RequestException as e:
         return {"error": str(e)}
+    
+
+
+def get_sales_over_time():
+    try:
+        resp = requests.get(f"{API_BASE_URL}/sales-over-time", timeout=100)
+        resp.raise_for_status()
+        result = resp.json()
+        return result
+    except requests.RequestException as e:
+        return {"error": str(e)}

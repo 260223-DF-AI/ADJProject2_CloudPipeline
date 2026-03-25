@@ -1,7 +1,7 @@
 # run this with: python -m streamlit run
 import streamlit as st
 import pandas as pd
-from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue, get_sales_by_region
+from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue, get_sales_by_region, get_sales_over_time
 st.title("Sales Data Dashboard")
 
 # Set background image
@@ -161,6 +161,22 @@ def data_analysis():
                 # keep df in case we want to display it as a table as well
                 st.dataframe(df)
 
+    with st.expander("Get Sales Over Time"):
+        st.write("""
+        This will query the sales data table in BigQuery and return the sales data over time grouped by month
+        """)
+        if st.button("Get Sales Over Time"): # when button is pressed, run the query and return results
+            st.write("Querying sales Over time please wait...")
+            result = get_sales_over_time()
+            if isinstance(result, dict) and "error" in result:
+                st.error(f"Query failed: {result['error']}")
+            else:
+                st.success("Query successful!")
+                df = pd.DataFrame(result)
+                # display as line graph
+                st.line_chart(df.set_index('month')['Total_Sales'])
+                # keep df in case we want to display it as a table as well
+                st.dataframe(df)
 
     if st.button("Home"):
         st.session_state.page = "home"
