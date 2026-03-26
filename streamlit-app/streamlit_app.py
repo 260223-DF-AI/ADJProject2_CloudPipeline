@@ -1,7 +1,7 @@
 # run this with: python -m streamlit run
 import streamlit as st
 import pandas as pd
-from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue, get_sales_by_region, get_sales_over_time
+from app_functionality import run_pipeline, delete_table_bigquery, query_sales_data, get_top_N_products_by_quantity,get_top_N_products_by_revenue, get_sales_by_region, get_sales_over_time, experimental_plain_text_query, query_bigquery
 st.title("Sales Data Dashboard")
 
 # Set background image
@@ -178,8 +178,65 @@ def data_analysis():
                 # keep df in case we want to display it as a table as well
                 st.dataframe(df)
 
-    if st.button("Home"):
-        st.session_state.page = "home"
+    with st.expander("Generate and Run SQL from Plain English"):
+        st.write("""
+        Step 1: Describe your query in plain English. GPT will generate a safe BigQuery SQL query.
+        Step 2: Review the SQL. If correct, click "Run SQL" to execute and view results.
+        """)
+
+        #  get input from user
+        user_request = st.text_area("Describe your query in plain English:")
+
+        # start running BQ on gpt
+        generated_sql = ""
+        if st.button("Generate SQL"):
+            if not user_request.strip():
+                st.warning("Please enter a description of the query.")
+            else:
+                st.info("Generating SQL, please wait...")
+                try:
+                    # Replace with your GPT SQL function
+                    generated_sql = experimental_plain_text_query(user_request)
+                    #print("sql:",generated_sql)
+                    # Show GPT output
+                    stripped_sql = generated_sql.split("BIG_QUERY_SQL_HERE:")[1].strip()
+                    if stripped_sql.startswith("```"):
+                        stripped_sql = stripped_sql[3:].lstrip()           # remove opening ```
+                        if stripped_sql.lower().startswith("sql"):
+                            stripped_sql = stripped_sql[3:].lstrip()       # remove optional 'sql'
+                    # Remove closing ```
+                    if stripped_sql.endswith("```"):
+                        stripped_sql = stripped_sql[:-3].rstrip() 
+                    st.subheader("Generated SQL:")
+                    st.code(stripped_sql, language="sql")
+
+                except Exception as e:
+                    st.error(f"Failed to generate SQL: {e}")
+
+        # run sql on bq
+        # Use st.text_area to keep the SQL between reruns
+
+        # Ensure generated_sql is persisted
+        if "generated_sql" not in st.session_state:
+            st.session_state.generated_sql = ""
+
+        # Input area
+        st.session_state.generated_sql = st.text_area(
+            "SQL Query", value=st.session_state.generated_sql, height=200
+        )
+
+        # Button to run SQL
+        if st.button("Run SQL"):
+            if st.session_state.generated_sql.startswith("ERROR"):
+                st.error(st.session_state.generated_sql)
+            else:
+                try:
+                    st.write("Running SQL, please wait...")
+                    df = query_bigquery(st.session_state.generated_sql)  # your BigQuery function
+                    st.success("Query executed successfully!")
+                    st.dataframe(df)
+                except Exception as e:
+                    st.error(f"Failed to run query: {e}")
 
 # Session state tracker
 if st.session_state.page == "home":

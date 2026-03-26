@@ -256,3 +256,25 @@ def get_total_length(bq_client: bigquery.client.Client = Depends(get_bq_client))
     totalTime = time.time() - start
     logger.info(f"Total File Length Query, time taken: {totalTime} seconds")
     return result.to_dict(orient="records")
+
+
+@app.post("/free-query")
+def free_query(sql_request):
+    sql_query = sql_request.sql.strip()
+
+    # Safety check: only allow SELECT queries
+    if not sql_query.lower().startswith("select"):
+        logger.error(f"Only SELECT statements are allowed. tried, {sql_request}")
+        raise HTTPException(status_code=400, detail="Only SELECT statements are allowed.")
+
+    try:
+        start = time.time()
+        bq_client = bigquery.Client()
+        query_job = bq_client.query(sql_query)
+        result_df = query_job.result().to_dataframe()
+        total_time = time.time() - start
+        logger.info(f"Free-query executed, time taken: {total_time:.2f} seconds, rows returned: {len(result_df)}")
+        return result_df.to_dict(orient="records")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
