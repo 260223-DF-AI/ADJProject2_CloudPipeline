@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Query, Depends, HTTPException, Body
-from .routers import apiroutes
 from .upload import csv_to_parquet, parquet_to_gcs
 from dotenv import load_dotenv
 from google.cloud import bigquery
@@ -34,8 +33,6 @@ app = FastAPI(
     description = "API for getting and posting sales data",
     version = "0.0.1"
 )
-
-app.include_router(apiroutes.router)
 
 @app.get("/")
 def get_root():
