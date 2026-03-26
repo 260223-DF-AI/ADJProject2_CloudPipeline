@@ -196,23 +196,31 @@ def data_analysis():
             else:
                 st.info("Generating SQL, please wait...")
                 try:
-                    # Replace with your GPT SQL function
-                    generated_sql = experimental_plain_text_query(user_request)
-                    #print("sql:",generated_sql)
-                    # Show GPT output
-                    stripped_sql = generated_sql.split("BIG_QUERY_SQL_HERE:")[1].strip()
-                    if stripped_sql.startswith("```"):
-                        stripped_sql = stripped_sql[3:].lstrip()           # remove opening ```
-                        if stripped_sql.lower().startswith("sql"):
-                            stripped_sql = stripped_sql[3:].lstrip()       # remove optional 'sql'
-                    # Remove closing ```
-                    if stripped_sql.endswith("```"):
-                        stripped_sql = stripped_sql[:-3].rstrip() 
-                    st.subheader("Generated SQL:")
-                    st.code(stripped_sql, language="sql")
-
+                    # Call GPT function
+                    generated_output = experimental_plain_text_query(user_request)
+                    
+                    # Check for ERROR
+                    if generated_output.strip().upper().startswith("ERROR"):
+                        st.error(generated_output.strip())
+                    else:
+                        # Safely extract SQL after BIG_QUERY_SQL_HERE:
+                        parts = generated_output.split("BIG_QUERY_SQL_HERE:")
+                        if len(parts) < 2:
+                            st.error("No SQL found in GPT output.")
+                        else:
+                            stripped_sql = parts[1].strip()
+                            # Remove code fences
+                            if stripped_sql.startswith("```"):
+                                stripped_sql = stripped_sql[3:].lstrip()
+                                if stripped_sql.lower().startswith("sql"):
+                                    stripped_sql = stripped_sql[3:].lstrip()
+                            if stripped_sql.endswith("```"):
+                                stripped_sql = stripped_sql[:-3].rstrip()
+                            
+                            st.subheader("Generated SQL:")
+                            st.code(stripped_sql, language="sql")
                 except Exception as e:
-                    st.error(f"Failed to generate SQL: {e}")
+                    st.error(f"An unexpected error occurred: {e}")
 
             print("STRIPPED SQL LINE 217: " + stripped_sql)
             # run sql on bq
