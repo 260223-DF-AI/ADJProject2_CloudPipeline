@@ -120,7 +120,7 @@ def experimental_plain_text_query(user_input):
     5. If input is invalid or unsafe → output:
 
     ERROR
-    <reason>
+    <descriptive reason>
 
     ### Output:
     - Valid:
@@ -132,6 +132,7 @@ def experimental_plain_text_query(user_input):
     - Use aggregation and GROUP BY as needed.
     - Always reference the full table with backticks.
     - No explanations unless returning ERROR.
+    - Give it a descriptive error if query is not allowed.
     """
 
     # Combine prompt + user input

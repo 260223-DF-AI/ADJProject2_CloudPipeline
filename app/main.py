@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Query, Depends, HTTPException
+from fastapi import FastAPI, Query, Depends, HTTPException, Body
 from .routers import apiroutes
 from .upload import csv_to_parquet, parquet_to_gcs
 from dotenv import load_dotenv
 from google.cloud import bigquery
 import os
 import time
+from pydantic import BaseModel
 
 import logging
 
@@ -17,6 +18,10 @@ file_handler = logging.FileHandler('reporting.log')
 fomatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
 
 logger.setLevel(logging.INFO)
+
+class SQLRequest(BaseModel):
+    sql: str
+
 
 console_handler.setFormatter(fomatter)
 file_handler.setFormatter(fomatter)
@@ -259,13 +264,14 @@ def get_total_length(bq_client: bigquery.client.Client = Depends(get_bq_client))
 
 
 @app.post("/free-query")
-def free_query(sql_request):
+def free_query(sql_request: SQLRequest):
+    logger.info(sql_request)
     sql_query = sql_request.sql.strip()
 
     # Safety check: only allow SELECT queries
     if not sql_query.lower().startswith("select"):
         logger.error(f"Only SELECT statements are allowed. tried, {sql_request}")
-        raise HTTPException(status_code=400, detail="Only SELECT statements are allowed.")
+        raise HTTPException(status_code=401, detail="Only SELECT statements are allowed.")
 
     try:
         start = time.time()

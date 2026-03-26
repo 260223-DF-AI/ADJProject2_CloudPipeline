@@ -189,6 +189,7 @@ def data_analysis():
 
         # start running BQ on gpt
         generated_sql = ""
+        stripped_sql = ""
         if st.button("Generate SQL"):
             if not user_request.strip():
                 st.warning("Please enter a description of the query.")
@@ -213,17 +214,19 @@ def data_analysis():
                 except Exception as e:
                     st.error(f"Failed to generate SQL: {e}")
 
-        # run sql on bq
-        # Use st.text_area to keep the SQL between reruns
+            print("STRIPPED SQL LINE 217: " + stripped_sql)
+            # run sql on bq
+            # Use st.text_area to keep the SQL between reruns
 
-        # Ensure generated_sql is persisted
-        if "generated_sql" not in st.session_state:
-            st.session_state.generated_sql = ""
+            # Ensure generated_sql is persisted
+            # if "generated_sql" not in st.session_state:
+            st.session_state.generated_sql = stripped_sql
+            print("LINE 224: " + st.session_state.generated_sql)
 
-        # Input area
-        st.session_state.generated_sql = st.text_area(
-            "SQL Query", value=st.session_state.generated_sql, height=200
-        )
+            # Input area
+            st.session_state.generated_sql = st.text_area(
+                "SQL Query", value=st.session_state.generated_sql, height=200
+            )
 
         # Button to run SQL
         if st.button("Run SQL"):
@@ -231,8 +234,9 @@ def data_analysis():
                 st.error(st.session_state.generated_sql)
             else:
                 try:
+                    print("STRIPPED SQL LINE 236: " + st.session_state.generated_sql)
                     st.write("Running SQL, please wait...")
-                    df = query_bigquery(st.session_state.generated_sql)  # your BigQuery function
+                    df = query_bigquery(st.session_state.generated_sql)  # your BigQuery function st.session_state.generated_sql
                     st.success("Query executed successfully!")
                     st.dataframe(df)
                 except Exception as e:

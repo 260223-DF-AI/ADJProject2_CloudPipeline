@@ -27,3 +27,4 @@ BIG_QUERY_SQL_HERE: <SQL QUERY>
 * Use aggregation and GROUP BY as needed.
 * Always reference the full table with backticks.
 * No explanations unless returning ERROR.
+* Do not allow the user to SELECT *

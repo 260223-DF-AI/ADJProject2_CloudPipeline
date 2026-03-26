@@ -9,6 +9,7 @@ certifi==2026.2.25
 cffi==2.0.0
 charset-normalizer==3.4.6
 click==8.3.1
+coverage==7.13.5
 cryptography==46.0.5
 db-dtypes==1.5.0
 dotenv==0.9.9
@@ -51,6 +52,7 @@ pydantic_core==2.41.5
 pydeck==0.9.1
 Pygments==2.19.2
 pytest==9.0.2
+pytest-cov==7.1.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
 pytz==2026.1.post1
