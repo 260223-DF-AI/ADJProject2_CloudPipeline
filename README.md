@@ -1,13 +1,43 @@
 # ADJProject2_CloudPipeline
 
-## Running Instructions
+This project will read in CSV files and turn them into parquet files for more efficient storage to Google's Cloud Storage (GCS) service. After the parquet files are succesfully uploaded to GCS it will be accessible for SQL queries through Google's BigQuery service. The upload of files to GCS and querying is easily done through our FastAPI implementation that is also connected to a Streamlit app.
 
-**Uvicorn:** from "~/ADJProject2_CloudPipeline", run: uvicorn app.main:app --reload  
-**Streamlit:** from "~ADJProject2_CloudPipeline", run: streamlit run streamlit-app/app.py  
+## Installation
 
+Use the Python package manager [pip](https://pip.pypa.io/en/stable/) to install the project dependencies.
 
-## running tests
+```bash
+pip install -r requirements.txt
+```
+
+## Running Instructions (from terminal)
 ### navigate to ~/ADJProject2_CloudPipeline
-### run: python3 -m pytest (simple)
-### run: python3 -m pytest -v (detailed)
-### run: python3 -m pytest -v -W ignore (detailed, ignore warnings)
+**Uvicorn:** (FastAPI)
+    
+    uvicorn app.main:app --reload  
+
+**Streamlit:** (Interactive App)
+    
+    streamlit run streamlit-app/app.py  
+
+
+## Running Tests (from terminal)
+### navigate to ~/ADJProject2_CloudPipeline
+    python3 -m pytest (simple)
+    python3 -m pytest -v (detailed)
+    python3 -m pytest -v -W ignore (detailed, ignore warnings)
+
+## Technologies Used
+
+- Python
+- Google Cloud Storage
+- Google Cloud Platform
+- BigQuery
+- FastAPI
+- Uvicorn
+- Streamlit
+
+## Contributors
+- Andy Mei
+- Dio Soetarman
+- Jaisal Mehta
