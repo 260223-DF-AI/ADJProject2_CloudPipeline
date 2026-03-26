@@ -147,7 +147,7 @@ def experimental_plain_text_query(user_input):
     )
 
     # Extract output
-    if not response.choices:
+    if len(response.choices) < 1:
         return "ERROR\n I've decided to not answer this question. Please try again."
     sql_output = response.choices[0].message.content
     #print(sql_output)

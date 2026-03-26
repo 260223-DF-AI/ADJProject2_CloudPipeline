@@ -1,0 +1,3 @@
+Total CSV file size: 182.18 MB
+Parquet file size: 43.50 MB
+File savings %: 76.12%
