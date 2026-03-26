@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 **Streamlit:** (Interactive App)
     
-    streamlit run streamlit-app/app.py  
+    streamlit run streamlit-app/streamlit_app.py  
 
 
 ## Running Tests (from terminal)
