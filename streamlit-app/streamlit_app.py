@@ -250,6 +250,8 @@ def data_analysis():
                 except Exception as e:
                     st.error(f"Failed to run query: {e}")
 
+        if st.button("Home"):
+            st.session_state.page = "home"
 # Session state tracker
 if st.session_state.page == "home":
     home()
