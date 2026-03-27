@@ -63,7 +63,8 @@ def get_file_size_savings():
 
 @app.post("/convert")
 def post_root():
-    FILE_PATHS = [os.getenv("SALES_CSV1"), os.getenv("SALES_CSV2"), os.getenv("SALES_CSV3"), os.getenv("SALES_CSV4"), os.getenv("SALES_CSV5")]
+    FILE_PATHS = [os.getenv("SALES_CSV1"), os.getenv("SALES_CSV2"), os.getenv("SALES_CSV3"), 
+                  os.getenv("SALES_CSV4"), os.getenv("SALES_CSV5")]
     OUTPUT_FILE = os.getenv("PARQUET_FILE")
     csv_to_parquet(FILE_PATHS, OUTPUT_FILE)
     start = time.time()
@@ -85,7 +86,6 @@ def query():
         bq_client = bigquery.Client()
         query_job = bq_client.query(query_statement)
         result = query_job.result().to_dataframe()
-        # return {"message": "sales-data table created"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"BigQuery query failed: {e}")
     totalTime = time.time() - start
