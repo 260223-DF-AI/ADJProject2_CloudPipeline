@@ -74,7 +74,7 @@ def gcp_setup():
             st.success("BigQuery table deleted successfully!")
 
 
-    log_file_path = "./../reporting.log"
+    log_file_path = "/Users/mehta/Desktop/Revature/RevatureGitHubFiles/ADJProject2_CloudPipeline/reporting.log"
 
     with st.expander("View Utility Report File"):
         st.write("Showing contents of the log file:")
@@ -178,7 +178,7 @@ def data_analysis():
                 # keep df in case we want to display it as a table as well
                 st.dataframe(df)
 
-    with st.expander("Generate and Run SQL from Plain English"):
+    with st.expander("Generate and Run SQL from Plain English (Beta)"):
         st.write("""
         Step 1: Describe your query in plain English. GPT will generate a safe BigQuery SQL query.
         Step 2: Review the SQL. If correct, click "Run SQL" to execute and view results.
